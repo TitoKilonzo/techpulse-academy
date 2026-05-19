@@ -5,8 +5,8 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
-    "TURSO_DATABASE_URL": "@turso_database_url",
-    "TURSO_AUTH_TOKEN": "@turso_auth_token",
-    "JWT_SECRET": "@jwt_secret"
+    "TURSO_DATABASE_URL": "$TURSO_DATABASE_URL",
+      "TURSO_AUTH_TOKEN": "$TURSO_AUTH_TOKEN",
+      "JWT_SECRET": "$JWT_SECRET"
   }
 }
