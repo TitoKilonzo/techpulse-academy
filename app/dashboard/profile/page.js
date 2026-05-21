@@ -20,7 +20,7 @@ export default async function ProfilePage() {
 
       {/* Profile card */}
       <div style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,padding:32,marginBottom:24,display:'flex',gap:28,alignItems:'flex-start',flexWrap:'wrap' }}>
-        <div style={{ width:80,height:80,borderRadius:'50%',background:'linear-gradient(135deg,#00D4FF,#7C3AED)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+        <div style={{ width:80,height:80,borderRadius:'50%',background:'linear-gradient(135deg,#F97316,#C2410C)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
           <User size={36} color="#fff" />
         </div>
         <div style={{ flex:1 }}>
@@ -42,9 +42,9 @@ export default async function ProfilePage() {
       {/* Stats */}
       <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:28 }}>
         {[
-          { label:'Enrolled',           value:progress.length,         color:'#00D4FF' },
+          { label:'Enrolled',           value:progress.length,         color:'#2563EB' },
           { label:'Completed Courses',  value:completedCourses.length, color:'#10B981' },
-          { label:'Total Lessons Done', value:totalLessons,            color:'#A855F7' },
+          { label:'Total Lessons Done', value:totalLessons,            color:'#A78BFA' },
         ].map(({label,value,color})=>(
           <div key={label} style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:12,padding:'20px 24px',textAlign:'center' }}>
             <div style={{ fontFamily:'var(--font-display)',fontWeight:700,fontSize:'2rem',color,marginBottom:4 }}>{value}</div>

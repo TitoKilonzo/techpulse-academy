@@ -13,7 +13,7 @@ function renderInline(text) {
     if (p.startsWith('`') && p.endsWith('`'))
       return <code key={i}>{p.slice(1, -1)}</code>;
     if (p.startsWith('**') && p.endsWith('**'))
-      return <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{p.slice(2, -2)}</strong>;
+      return <strong key={i} style={{ color: '#111827', fontWeight: 600 }}>{p.slice(2, -2)}</strong>;
     return p;
   });
 }
@@ -32,8 +32,8 @@ function renderContent(raw) {
 
   return segs.map((seg, si) => {
     if (seg.type === 'code') return (
-      <pre key={si} style={{ background: '#0A1220', border: '1px solid var(--border)', borderRadius: 10, padding: 16, overflow: 'auto', marginBottom: 16, marginTop: 8 }}>
-        {seg.lang && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.63rem', color: 'var(--text-muted)', marginBottom: 8, letterSpacing: '0.1em' }}>{seg.lang.toUpperCase()}</div>}
+      <pre key={si} style={{ background: '#0A1220', border: '1px solid #E5E7EB', borderRadius: 10, padding: 16, overflow: 'auto', marginBottom: 16, marginTop: 8 }}>
+        {seg.lang && <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.63rem', color: '#9CA3AF', marginBottom: 8, letterSpacing: '0.1em' }}>{seg.lang.toUpperCase()}</div>}
         <code style={{ background: 'none', border: 'none', padding: 0, color: '#A8C0D6', fontSize: '0.82rem', lineHeight: 1.7 }}>{seg.code}</code>
       </pre>
     );
@@ -41,12 +41,12 @@ function renderContent(raw) {
     return seg.text.split('\n').map((line, li) => {
       if (!line) return <br key={`${si}-${li}`} />;
       if (line.startsWith('- '))
-        return <li key={`${si}-${li}`} style={{ marginLeft: 20, marginBottom: 4, color: 'var(--text-secondary)' }}>{renderInline(line.slice(2))}</li>;
+        return <li key={`${si}-${li}`} style={{ marginLeft: 20, marginBottom: 4, color: '#4B5563' }}>{renderInline(line.slice(2))}</li>;
       if (/^\d+\. /.test(line))
-        return <li key={`${si}-${li}`} style={{ marginLeft: 22, marginBottom: 4, color: 'var(--text-secondary)' }}>{renderInline(line.replace(/^\d+\. /, ''))}</li>;
+        return <li key={`${si}-${li}`} style={{ marginLeft: 22, marginBottom: 4, color: '#4B5563' }}>{renderInline(line.replace(/^\d+\. /, ''))}</li>;
       if (line.startsWith('**') && line.endsWith('**'))
-        return <strong key={`${si}-${li}`} style={{ display: 'block', color: 'var(--text-primary)', fontWeight: 600, marginTop: 14, marginBottom: 4 }}>{line.slice(2, -2)}</strong>;
-      return <p key={`${si}-${li}`} style={{ marginBottom: 8, color: 'var(--text-secondary)', lineHeight: 1.78 }}>{renderInline(line)}</p>;
+        return <strong key={`${si}-${li}`} style={{ display: 'block', color: '#111827', fontWeight: 600, marginTop: 14, marginBottom: 4 }}>{line.slice(2, -2)}</strong>;
+      return <p key={`${si}-${li}`} style={{ marginBottom: 8, color: '#4B5563', lineHeight: 1.78 }}>{renderInline(line)}</p>;
     });
   });
 }
@@ -64,8 +64,8 @@ function Quiz({ lesson }) {
   return (
     <div>
       {lesson.questions.map((q, qi) => (
-        <div key={qi} style={{ marginBottom: 22, background: 'var(--bg-hover)', border: '1px solid var(--border)', borderRadius: 12, padding: '18px 20px' }}>
-          <p style={{ fontWeight: 600, marginBottom: 14, color: 'var(--text-primary)', lineHeight: 1.5, fontSize: '0.9rem' }}>
+        <div key={qi} style={{ marginBottom: 22, background: 'var(--bg-hover)', border: '1px solid #E5E7EB', borderRadius: 12, padding: '18px 20px' }}>
+          <p style={{ fontWeight: 600, marginBottom: 14, color: '#111827', lineHeight: 1.5, fontSize: '0.9rem' }}>
             {qi + 1}. {q.q}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -78,9 +78,9 @@ function Quiz({ lesson }) {
                   textAlign: 'left', padding: '10px 14px', borderRadius: 8,
                   cursor: submitted ? 'default' : 'pointer', fontSize: '0.875rem',
                   transition: 'all 0.15s',
-                  background: correct ? 'rgba(16,185,129,0.12)' : wrong ? 'rgba(244,63,94,0.1)' : sel ? 'rgba(0,212,255,0.1)' : 'var(--bg-card)',
+                  background: correct ? 'rgba(16,185,129,0.12)' : wrong ? 'rgba(239,68,68,0.10)' : sel ? 'rgba(249,115,22,0.10)' : 'var(--bg-card)',
                   border:     correct ? '1px solid rgba(16,185,129,0.4)' : wrong ? '1px solid rgba(244,63,94,0.35)' : sel ? '1px solid rgba(0,212,255,0.4)' : '1px solid var(--border)',
-                  color:      correct ? '#10B981' : wrong ? '#F43F5E' : sel ? 'var(--cyan)' : 'var(--text-secondary)',
+                  color:      correct ? '#10B981' : wrong ? '#EF4444' : sel ? '#F97316' : '#4B5563',
                 }}>
                   {opt}
                 </button>
@@ -92,7 +92,7 @@ function Quiz({ lesson }) {
 
       {!submitted ? (
         <button onClick={() => setSubmitted(true)} disabled={!allDone} style={{
-          background: 'linear-gradient(135deg,#00D4FF,#7C3AED)', color: '#fff', border: 'none',
+          background: 'linear-gradient(135deg,#F97316,#C2410C)', color: '#fff', border: 'none',
           borderRadius: 9, padding: '12px 28px', fontWeight: 600, cursor: allDone ? 'pointer' : 'not-allowed',
           fontSize: '0.9rem', opacity: allDone ? 1 : 0.5, transition: 'opacity 0.2s',
         }}>
@@ -101,10 +101,10 @@ function Quiz({ lesson }) {
       ) : (
         <div style={{ background: 'rgba(0,212,255,0.07)', border: '1px solid rgba(0,212,255,0.18)', borderRadius: 12, padding: 24, textAlign: 'center' }}>
           <Award size={34} color="var(--cyan)" style={{ marginBottom: 10 }} />
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--cyan)' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: '#F97316' }}>
             {score} / {lesson.questions.length}
           </div>
-          <div style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: '0.875rem' }}>
+          <div style={{ color: '#4B5563', marginTop: 4, fontSize: '0.875rem' }}>
             {score === lesson.questions.length ? '🎉 Perfect score!' : score >= lesson.questions.length * 0.7 ? 'Great work!' : 'Keep practicing!'}
           </div>
         </div>
@@ -114,7 +114,7 @@ function Quiz({ lesson }) {
 }
 
 const TYPE_ICON  = { lesson: PlayCircle, lab: FlaskConical, quiz: HelpCircle };
-const TYPE_COLOR = { lesson: '#00D4FF',  lab: '#F59E0B',    quiz: '#A855F7'  };
+const TYPE_COLOR = { lesson: '#F97316',  lab: '#F59E0B',    quiz: '#A78BFA'  };
 
 export default function CourseViewer({ course, completedLessons, categoryMeta }) {
   const [activeIdx,   setActiveIdx]   = useState(0);
@@ -126,7 +126,7 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
   const totalDone= completed.size;
   const pct      = calcProgress(totalDone, course.lessons.length);
   const TIcon    = TYPE_ICON[lesson.type]  ?? PlayCircle;
-  const tColor   = TYPE_COLOR[lesson.type] ?? '#00D4FF';
+  const tColor   = TYPE_COLOR[lesson.type] ?? '#F97316';
 
   const markComplete = useCallback(async () => {
     if (marking) return;
@@ -155,19 +155,19 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.06em', padding: '3px 9px', borderRadius: 100, color: categoryMeta.color, background: categoryMeta.bg, border: `1px solid ${categoryMeta.border}` }}>
               {categoryMeta.label.toUpperCase()}
             </span>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{course.title}</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', color: '#111827' }}>{course.title}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div className="progress-bar" style={{ flex: 1 }}>
               <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
             </div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', flexShrink: 0 }}>{totalDone}/{course.lessons.length} · {pct}%</span>
+            <span style={{ fontSize: '0.72rem', color: '#9CA3AF', flexShrink: 0 }}>{totalDone}/{course.lessons.length} · {pct}%</span>
           </div>
         </div>
         {/* Mobile: toggle lesson list */}
         <button onClick={() => setListVisible(v => !v)} style={{
-          background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8,
-          padding: '7px 12px', color: 'var(--text-secondary)', cursor: 'pointer',
+          background: '#fff', border: '1px solid #E5E7EB', borderRadius: 8,
+          padding: '7px 12px', color: '#4B5563', cursor: 'pointer',
           fontSize: '0.8rem', display: 'none',
         }} className="viewer-toggle-btn">
           {listVisible ? 'Hide' : 'Lessons'}
@@ -181,16 +181,16 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
         {listVisible && (
           <div className="viewer-lesson-list" style={{
             width: 272, flexShrink: 0,
-            background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+            background: '#F9FAFB', border: '1px solid #E5E7EB',
             borderRadius: 12, overflow: 'hidden', display: 'flex', flexDirection: 'column',
           }}>
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
+            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', fontSize: '0.72rem', color: '#9CA3AF', letterSpacing: '0.08em' }}>
               LESSONS ({course.lessons.length})
             </div>
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {course.lessons.map((l, i) => {
                 const LIcon = TYPE_ICON[l.type]  ?? PlayCircle;
-                const lClr  = TYPE_COLOR[l.type] ?? '#00D4FF';
+                const lClr  = TYPE_COLOR[l.type] ?? '#F97316';
                 const done  = completed.has(l.id);
                 const active= i === activeIdx;
                 return (
@@ -205,14 +205,14 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
                     <div style={{ marginTop: 1, flexShrink: 0 }}>
                       {done
                         ? <CheckCircle size={15} color="#10B981" />
-                        : <LIcon size={15} color={active ? lClr : 'var(--text-muted)'} />
+                        : <LIcon size={15} color={active ? lClr : '#9CA3AF'} />
                       }
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '0.78rem', fontWeight: active ? 600 : 400, color: active ? 'var(--text-primary)' : 'var(--text-secondary)', lineHeight: 1.35, marginBottom: 2, wordBreak: 'break-word' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: active ? 600 : 400, color: active ? '#111827' : '#4B5563', lineHeight: 1.35, marginBottom: 2, wordBreak: 'break-word' }}>
                         {l.title}
                       </div>
-                      <div style={{ fontSize: '0.63rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.63rem', color: '#9CA3AF' }}>
                         {l.type} · {l.duration}m
                       </div>
                     </div>
@@ -227,16 +227,16 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
         <div className="viewer-content" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Lesson header card */}
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 22px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 12, padding: '16px 22px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
                 <span style={{ background: `${tColor}18`, border: `1px solid ${tColor}35`, color: tColor, fontFamily: 'var(--font-mono)', fontSize: '0.63rem', letterSpacing: '0.08em', padding: '3px 9px', borderRadius: 100 }}>
                   {lesson.type.toUpperCase()}
                 </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>
                   {activeIdx + 1} / {course.lessons.length}
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.75rem', color: '#9CA3AF' }}>
                   <Clock size={11} />{lesson.duration}m
                 </span>
               </div>
@@ -252,7 +252,7 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
           </div>
 
           {/* Lesson body */}
-          <div style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 12, padding: 'clamp(18px,3vw,28px) clamp(18px,4vw,32px)' }}>
+          <div style={{ flex: 1, overflowY: 'auto', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 12, padding: 'clamp(18px,3vw,28px) clamp(18px,4vw,32px)' }}>
             {lesson.type === 'quiz'
               ? <Quiz lesson={lesson} />
               : <div>{renderContent(lesson.content)}</div>
@@ -267,9 +267,9 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '10px 16px', borderRadius: 8, fontSize: '0.875rem',
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
+                background: '#fff', border: '1px solid #E5E7EB',
                 cursor: activeIdx === 0 ? 'not-allowed' : 'pointer',
-                color: 'var(--text-secondary)', opacity: activeIdx === 0 ? 0.45 : 1,
+                color: '#4B5563', opacity: activeIdx === 0 ? 0.45 : 1,
                 flexShrink: 0,
               }}
             >
@@ -282,7 +282,7 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
               style={{
                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '10px 16px', borderRadius: 8, fontWeight: 600, fontSize: '0.875rem',
-                background: isDone ? 'rgba(16,185,129,0.1)' : 'linear-gradient(135deg,#00D4FF,#7C3AED)',
+                background: isDone ? 'rgba(16,185,129,0.1)' : 'linear-gradient(135deg,#F97316,#C2410C)',
                 border:     isDone ? '1px solid rgba(16,185,129,0.3)' : 'none',
                 color:      isDone ? '#10B981' : '#fff',
                 cursor: marking ? 'not-allowed' : 'pointer',
@@ -301,9 +301,9 @@ export default function CourseViewer({ course, completedLessons, categoryMeta })
               style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '10px 16px', borderRadius: 8, fontSize: '0.875rem',
-                background: 'var(--bg-card)', border: '1px solid var(--border)',
+                background: '#fff', border: '1px solid #E5E7EB',
                 cursor: activeIdx === course.lessons.length - 1 ? 'not-allowed' : 'pointer',
-                color: 'var(--text-secondary)',
+                color: '#4B5563',
                 opacity: activeIdx === course.lessons.length - 1 ? 0.45 : 1,
                 flexShrink: 0,
               }}

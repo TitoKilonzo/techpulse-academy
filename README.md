@@ -29,7 +29,7 @@
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/TitoKilonzo/techpulse-academy
+git clone https://github.com/your-username/techpulse-academy
 cd techpulse-academy
 npm install
 ```

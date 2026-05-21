@@ -3,10 +3,15 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
-  eslint: { ignoreDuringBuilds: true },
+  /* Instant page loads — aggressive static generation */
+  poweredByHeader: false,
+  compress: true,
+  experimental: {
+    optimisticClientCache: true,
+  },
 };
 
 export default nextConfig;
