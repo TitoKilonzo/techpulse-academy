@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck, Cloud, BrainCircuit, GitBranch, Cpu,
@@ -9,64 +9,52 @@ import {
 import { getTotalStats, getFeaturedCourses } from '@/lib/courses';
 import { getCategoryMeta, formatDuration } from '@/lib/utils';
 
-/* ── Unsplash image helpers ── */
-const HERO_IMG     = 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&q=80';
-const FEATURES_IMG = 'https://images.unsplash.com/photo-1550439062-609e1531270e?w=1400&q=80';
-const CTA_IMG      = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400&q=80';
-
 const CATEGORIES = [
-  { id: 'cybersecurity', Icon: ShieldCheck,  label: 'Cybersecurity',   desc: 'SOC labs, network security, ethical hacking', color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&q=70' },
-  { id: 'ai',            Icon: BrainCircuit, label: 'AI & Claude',     desc: 'LLMs, prompt engineering, Anthropic API',   color: '#7C3AED', bg: 'rgba(124,58,237,0.08)', img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400&q=70' },
-  { id: 'cloud',         Icon: Cloud,        label: 'Cloud Computing', desc: 'AWS, Docker, Kubernetes, serverless',       color: '#0284C7', bg: 'rgba(2,132,199,0.08)',   img: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=400&q=70' },
-  { id: 'opensource',    Icon: GitBranch,    label: 'Open Source',     desc: 'Git, contributions, Linux, licensing',     color: '#059669', bg: 'rgba(5,150,105,0.08)',   img: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=400&q=70' },
-  { id: 'tech',          Icon: Cpu,          label: 'Tech Fundamentals',desc: 'Auth, networking, databases, APIs',        color: '#F97316', bg: 'rgba(249,115,22,0.08)',  img: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&q=70' },
+  { id: 'cybersecurity', Icon: ShieldCheck,  label: 'Cybersecurity',   desc: 'SOC labs, network security, ethical hacking' },
+  { id: 'ai',            Icon: BrainCircuit, label: 'AI & Claude',     desc: 'LLMs, prompt engineering, Anthropic API' },
+  { id: 'cloud',         Icon: Cloud,        label: 'Cloud Computing', desc: 'AWS, Docker, Kubernetes, serverless' },
+  { id: 'opensource',    Icon: GitBranch,    label: 'Open Source',     desc: 'Git, contributions, Linux, licensing' },
+  { id: 'tech',          Icon: Cpu,          label: 'Tech Fundamentals',desc: 'Auth, networking, databases, APIs' },
 ];
 
 const FEATURES = [
-  { Icon: Terminal, title: 'Hands-on Labs',       desc: 'Real tools — Splunk, Kali, AWS, Docker. Not simulated.',          color: '#F97316' },
-  { Icon: Lock,     title: 'JWT Auth + Turso DB',  desc: 'Production-grade auth backed by libsql edge database.',           color: '#7C3AED' },
-  { Icon: Globe,    title: 'Open Source MIT',      desc: 'Fork it, self-host it, contribute back to the community.',        color: '#059669' },
-  { Icon: Star,     title: 'Progress Tracking',    desc: 'Per-user lesson completion synced to your account.',              color: '#0284C7' },
+  { Icon: Terminal, title: 'Hands-on Labs',       desc: 'Real tools — Splunk, Kali, AWS, Docker. Not simulated.' },
+  { Icon: Lock,     title: 'JWT Auth + Turso DB', desc: 'Production-grade auth backed by libsql edge database.' },
+  { Icon: Globe,    title: 'Open Source MIT',     desc: 'Fork it, self-host it, contribute back to the community.' },
+  { Icon: Star,     title: 'Progress Tracking',   desc: 'Per-user lesson completion synced to your account.' },
 ];
 
 /* ── Category Card ── */
-function CategoryCard({ id, Icon, label, desc, color, bg, img }) {
+function CategoryCard({ id, Icon, label, desc }) {
   const [hovered, setHovered] = useState(false);
+  const meta = getCategoryMeta(id);
+
   return (
     <Link
       href={`/dashboard/courses?cat=${id}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="animate-fade-up"
       style={{
-        background: hovered ? bg : '#fff',
-        border: `1.5px solid ${hovered ? color : '#E5E7EB'}`,
+        background: hovered ? 'var(--bg-hover)' : 'var(--bg-card)',
+        border: `1px solid ${hovered ? 'var(--orange-glow)' : 'var(--border)'}`,
         borderRadius: 16,
         overflow: 'hidden',
         textDecoration: 'none',
         display: 'block',
-        transform: hovered ? 'translateY(-4px)' : 'none',
-        transition: 'all 0.22s',
-        boxShadow: hovered ? `0 12px 32px ${color}22` : '0 1px 4px rgba(0,0,0,0.05)',
+        transform: hovered ? 'translateY(-6px)' : 'none',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        boxShadow: hovered ? '0 12px 32px rgba(232,134,12,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Category thumbnail */}
-      <div style={{ position: 'relative', height: 100, overflow: 'hidden' }}>
-        <img
-          src={img}
-          alt={label}
-          loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.35s', transform: hovered ? 'scale(1.06)' : 'scale(1)' }}
-        />
-        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 100%)` }} />
-      </div>
-      <div style={{ padding: '14px 18px 18px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Icon size={17} color={color} />
+      <div style={{ padding: '24px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--orange-dim)', border: '1px solid var(--orange-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.3s', transform: hovered ? 'scale(1.1)' : 'scale(1)' }}>
+            <Icon size={20} color="var(--orange-dark)" />
           </div>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.9rem', color: '#111827' }}>{label}</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>{label}</span>
         </div>
-        <p style={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.5 }}>{desc}</p>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{desc}</p>
       </div>
     </Link>
   );
@@ -81,50 +69,47 @@ function CourseCard({ course }) {
       href={`/dashboard/courses/${course.slug}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="course-card"
+      className="card-premium animate-fade-up"
       style={{
         display: 'block',
-        background: '#fff',
-        border: `1.5px solid ${hovered ? meta.color : '#E5E7EB'}`,
-        borderRadius: 16,
-        overflow: 'hidden',
         textDecoration: 'none',
-        boxShadow: hovered ? `0 16px 40px ${meta.color}18` : '0 1px 4px rgba(0,0,0,0.05)',
-        transition: 'all 0.22s',
       }}
     >
-      <div style={{ position: 'relative', height: 160, overflow: 'hidden' }}>
-        <img
-          src={course.thumbnail}
-          alt={course.title}
-          loading="lazy"
-          className="course-thumb"
-        />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }} />
-        <span style={{
-          position: 'absolute', top: 10, left: 10,
-          fontFamily: 'var(--font-mono)', fontSize: '0.62rem', letterSpacing: '0.06em',
-          padding: '3px 9px', borderRadius: 100,
-          color: meta.color, background: 'rgba(255,255,255,0.92)', border: `1px solid ${meta.color}44`,
-          fontWeight: 600,
+      <div style={{ position: 'relative', height: 180, overflow: 'hidden' }}>
+        {/* Placeholder gradient thumbnail to replace Unsplash */}
+        <div style={{
+          width: '100%', height: '100%',
+          background: `linear-gradient(135deg, var(--surface-dark) 0%, var(--orange-dark) 100%)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'transform 0.5s', transform: hovered ? 'scale(1.06)' : 'scale(1)'
+        }}>
+          <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: '5rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>{course.title.substring(0,2)}</span>
+        </div>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
+        <span className="glass" style={{
+          position: 'absolute', top: 12, left: 12,
+          fontFamily: 'var(--font-mono)', fontSize: '0.65rem', letterSpacing: '0.06em',
+          padding: '4px 10px', borderRadius: 100,
+          color: 'var(--orange-dark)',
+          fontWeight: 700,
         }}>
           {meta.label.toUpperCase()}
         </span>
       </div>
-      <div style={{ padding: '16px 18px' }}>
-        <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: 6, lineHeight: 1.35, color: '#111827' }}>{course.title}</h3>
-        <p style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: 14, lineHeight: 1.55,
+      <div style={{ padding: '20px' }}>
+        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: 8, lineHeight: 1.4, color: 'var(--text-primary)' }}>{course.title}</h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.6,
           display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {course.description}
         </p>
-        <div style={{ display: 'flex', gap: 12, fontSize: '0.77rem', color: '#9CA3AF', alignItems: 'center', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={12} color="#F97316" />{course.lessons.length} lessons</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} color="#F97316" />{formatDuration(course.duration)}</span>
+        <div style={{ display: 'flex', gap: 12, fontSize: '0.8rem', color: 'var(--text-muted)', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={14} color="var(--orange)" />{course.lessons.length} lessons</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={14} color="var(--orange)" />{formatDuration(course.duration)}</span>
           <span style={{
-            padding: '2px 9px', borderRadius: 100, fontSize: '0.7rem', textTransform: 'capitalize',
-            background:  course.level === 'beginner' ? 'rgba(5,150,105,0.1)' : 'rgba(245,158,11,0.1)',
-            color:       course.level === 'beginner' ? '#059669'             : '#D97706',
-            border:      course.level === 'beginner' ? '1px solid rgba(5,150,105,0.2)' : '1px solid rgba(245,158,11,0.2)',
+            padding: '3px 10px', borderRadius: 100, fontSize: '0.75rem', textTransform: 'capitalize',
+            background:  'var(--bg-hover)',
+            color:       'var(--orange-dark)',
+            border:      '1px solid var(--border)',
             fontWeight: 600,
           }}>{course.level}</span>
         </div>
@@ -138,12 +123,18 @@ export default function LandingPage() {
   const stats    = getTotalStats();
   const featured = getFeaturedCourses().slice(0, 3);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const navLinkStyle = { color: '#4B5563', textDecoration: 'none', fontSize: '0.875rem', padding: '8px 14px', borderRadius: 8, transition: 'color 0.15s, background 0.15s', fontWeight: 500 };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinkStyle = { color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.9rem', padding: '8px 16px', borderRadius: 8, transition: 'all 0.2s', fontWeight: 600 };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh' }}>
-
+    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', overflowX: 'hidden' }}>
       {/* ── Responsive overrides ── */}
       <style>{`
         @media (max-width: 900px) {
@@ -152,56 +143,51 @@ export default function LandingPage() {
           .feat-grid  { grid-template-columns: repeat(2,1fr) !important; }
         }
         @media (max-width: 600px) {
-          .hero-title { font-size: 2.2rem !important; }
-          .hero-sub   { font-size: 0.95rem !important; }
+          .hero-title { font-size: 2.5rem !important; }
+          .hero-sub   { font-size: 1rem !important; }
           .hero-btns  { flex-direction: column !important; }
-          .stats-row  { gap: 20px !important; flex-wrap: wrap; }
+          .stats-row  { gap: 24px !important; flex-wrap: wrap; }
           .cat-grid   { grid-template-columns: 1fr !important; }
           .course-grid{ grid-template-columns: 1fr !important; }
           .feat-grid  { grid-template-columns: 1fr !important; }
-          .cta-box    { padding: 36px 20px !important; }
-          .cta-title  { font-size: 1.5rem !important; }
           .nav-desktop{ display: none !important; }
           .show-mobile{ display: flex !important; }
-          .section-pad{ padding-left: 16px !important; padding-right: 16px !important; }
+          .section-pad{ padding-left: 20px !important; padding-right: 20px !important; }
         }
-        @media (max-width: 380px) {
-          .hero-title { font-size: 1.9rem !important; }
-          .stats-row  { grid-template-columns: 1fr 1fr; display: grid !important; gap: 12px !important; }
-        }
-        a:hover .course-thumb { transform: scale(1.04); }
+        .nav-link:hover { background: var(--bg-hover); color: var(--orange-dark) !important; }
       `}</style>
 
       {/* ── Navbar ── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid #F3F4F6',
-        padding: '0 24px', height: 64,
+        background: scrolled ? 'rgba(255,255,255,0.85)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+        padding: '0 24px', height: 72,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+        transition: 'all 0.3s ease',
+        boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.05)' : 'none',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 36, height: 36, borderRadius: 9, background: 'linear-gradient(135deg,#F97316,#C2410C)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(249,115,22,0.35)' }}>
-            <Zap size={18} color="#fff" fill="#fff" />
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, #F59E0B, #E8860C)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(232,134,12,0.3)' }}>
+            <Zap size={20} color="#fff" fill="#fff" />
           </div>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.05rem', color: '#111827' }}>TechPulse</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', color: scrolled ? 'var(--text-primary)' : '#fff', transition: 'color 0.3s' }}>TechPulse</span>
         </Link>
 
-        <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Link href="#courses"  style={navLinkStyle}>Courses</Link>
-          <Link href="#features" style={navLinkStyle}>Features</Link>
-          <Link href="/login"    style={{ ...navLinkStyle, border: '1.5px solid #E5E7EB', borderRadius: 8 }}>Log in</Link>
-          <Link href="/signup"   style={{ background: 'linear-gradient(135deg,#F97316,#C2410C)', color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 9, fontSize: '0.875rem', fontWeight: 700, boxShadow: '0 2px 8px rgba(249,115,22,0.3)' }}>
+        <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Link href="#courses"  className="nav-link" style={{...navLinkStyle, color: scrolled ? 'var(--text-primary)' : '#fff'}}>Courses</Link>
+          <Link href="#features" className="nav-link" style={{...navLinkStyle, color: scrolled ? 'var(--text-primary)' : '#fff'}}>Features</Link>
+          <Link href="/login"    className="nav-link" style={{ ...navLinkStyle, border: `1.5px solid ${scrolled ? 'var(--border)' : 'rgba(255,255,255,0.3)'}`, borderRadius: 10, color: scrolled ? 'var(--text-primary)' : '#fff' }}>Log in</Link>
+          <Link href="/signup"   className="btn-primary" style={{ textDecoration: 'none', padding: '10px 24px', borderRadius: 10, fontSize: '0.95rem', fontWeight: 700, marginLeft: 8 }}>
             Get Started
           </Link>
         </div>
 
         {/* Mobile burger */}
-        <button className="show-mobile" onClick={() => setMobileNavOpen(o => !o)} style={{
-          display: 'none', background: 'none', border: '1.5px solid #E5E7EB',
-          borderRadius: 8, padding: '7px 12px', color: '#4B5563', cursor: 'pointer',
-          alignItems: 'center', gap: 6, fontWeight: 600, fontSize: '0.85rem',
+        <button className="show-mobile glass" onClick={() => setMobileNavOpen(o => !o)} style={{
+          display: 'none', color: scrolled ? 'var(--text-primary)' : '#fff', cursor: 'pointer',
+          alignItems: 'center', gap: 8, fontWeight: 600, fontSize: '0.9rem', padding: '8px 14px', borderRadius: 10, border: `1px solid ${scrolled ? 'var(--border)' : 'rgba(255,255,255,0.2)'}`
         }}>
           Menu
         </button>
@@ -209,69 +195,66 @@ export default function LandingPage() {
 
       {/* Mobile nav drawer */}
       {mobileNavOpen && (
-        <div style={{
-          position: 'fixed', top: 64, left: 0, right: 0, zIndex: 99,
-          background: '#fff', borderBottom: '1px solid #E5E7EB',
-          padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 4,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+        <div className="animate-fade-in" style={{
+          position: 'fixed', top: 72, left: 0, right: 0, zIndex: 99,
+          background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid var(--border)',
+          padding: '24px', display: 'flex', flexDirection: 'column', gap: 8,
+          boxShadow: '0 12px 32px rgba(0,0,0,0.1)',
         }}>
-          <Link href="#courses"  onClick={() => setMobileNavOpen(false)} style={{ color: '#374151', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #F3F4F6', fontWeight: 500 }}>Courses</Link>
-          <Link href="#features" onClick={() => setMobileNavOpen(false)} style={{ color: '#374151', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #F3F4F6', fontWeight: 500 }}>Features</Link>
-          <Link href="/login"    onClick={() => setMobileNavOpen(false)} style={{ color: '#374151', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid #F3F4F6', fontWeight: 500 }}>Log in</Link>
-          <Link href="/signup"   onClick={() => setMobileNavOpen(false)} style={{ background: 'linear-gradient(135deg,#F97316,#C2410C)', color: '#fff', textDecoration: 'none', padding: '13px 16px', borderRadius: 9, fontWeight: 700, textAlign: 'center', marginTop: 8 }}>
+          <Link href="#courses"  onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '14px 0', borderBottom: '1px solid var(--border-light)', fontWeight: 600, fontSize: '1.1rem' }}>Courses</Link>
+          <Link href="#features" onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '14px 0', borderBottom: '1px solid var(--border-light)', fontWeight: 600, fontSize: '1.1rem' }}>Features</Link>
+          <Link href="/login"    onClick={() => setMobileNavOpen(false)} style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '14px 0', borderBottom: '1px solid var(--border-light)', fontWeight: 600, fontSize: '1.1rem' }}>Log in</Link>
+          <Link href="/signup"   onClick={() => setMobileNavOpen(false)} className="btn-primary" style={{ textDecoration: 'none', padding: '16px', borderRadius: 12, fontWeight: 700, textAlign: 'center', marginTop: 12, fontSize: '1.1rem' }}>
             Get Started Free
           </Link>
         </div>
       )}
 
       {/* ── Hero Section ── */}
-      <section style={{ paddingTop: 130, paddingBottom: 96, position: 'relative', overflow: 'hidden', minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
-        {/* Background image */}
-        <img
-          src={HERO_IMG}
-          alt=""
-          aria-hidden="true"
-          className="hero-bg-img"
-          loading="eager"
-          fetchPriority="high"
-        />
-        {/* Gradient overlay — white/orange wash */}
+      <section style={{ paddingTop: 160, paddingBottom: 120, position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="hero-bg-img" />
         <div className="hero-overlay" />
-        {/* Decorative blobs */}
-        <div style={{ position: 'absolute', top: '8%', right: '5%', width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)', zIndex: 1, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '5%', left: '-5%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%)', zIndex: 1, pointerEvents: 'none' }} />
+        
+        {/* CSS Floating shapes */}
+        <div style={{ position: 'absolute', top: '15%', right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, var(--orange) 0%, transparent 70%)', opacity: 0.15, filter: 'blur(40px)', animation: 'float 6s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, #FCD34D 0%, transparent 70%)', opacity: 0.1, filter: 'blur(50px)', animation: 'float 8s ease-in-out infinite reverse' }} />
 
-        <div className="section-pad" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2, textAlign: 'center', width: '100%' }}>
+        <div className="section-pad animate-fade-up" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2, textAlign: 'center', width: '100%' }}>
+          
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', padding: '6px 16px', borderRadius: 100, marginBottom: 32, color: '#fff', fontSize: '0.85rem', fontWeight: 600 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} /> Platform v2.0 Live
+          </div>
 
-          <h1 className="hero-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(2.6rem,7vw,5rem)', lineHeight: 1.1, marginBottom: 22 }}>
-            <span className="gradient-text">Build. Hack.</span><br />
-            <span style={{ color: '#111827' }}>Deploy.</span>
+          <h1 className="hero-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(3rem,8vw,6rem)', lineHeight: 1.05, marginBottom: 28, color: '#fff' }}>
+            <span className="gradient-text">Master Tech.</span><br />
+            Build the Future.
           </h1>
 
-          <p className="hero-sub" style={{ fontSize: 'clamp(1rem,2.2vw,1.2rem)', color: '#4B5563', maxWidth: 620, margin: '0 auto 40px', lineHeight: 1.8 }}>
-            The open-source learning platform for tech enthusiasts mastering Cybersecurity, Cloud Computing, Claude AI, Open Source, and more.
+          <p className="hero-sub" style={{ fontSize: 'clamp(1.1rem,2.5vw,1.35rem)', color: 'rgba(255,255,255,0.8)', maxWidth: 700, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 400 }}>
+            Premium interactive learning for developers and security professionals. Open source. Hands-on. Built for scale.
           </p>
 
-          <div className="hero-btns" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#F97316,#C2410C)', color: '#fff', textDecoration: 'none', padding: '15px 32px', borderRadius: 11, fontWeight: 700, fontSize: '0.95rem', boxShadow: '0 4px 16px rgba(249,115,22,0.35)' }}>
-              Start Learning Free <ArrowRight size={17} />
+          <div className="hero-btns" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/signup" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', padding: '18px 40px', borderRadius: 12, fontWeight: 700, fontSize: '1.1rem' }}>
+              Start Learning Free <ArrowRight size={20} />
             </Link>
-            <a href="https://github.com/TitoKilonzo/techpulse-academy" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: '1.5px solid #E5E7EB', color: '#374151', textDecoration: 'none', padding: '15px 32px', borderRadius: 11, fontSize: '0.95rem', fontWeight: 600, background: '#fff' }}>
-              <GitBranch size={17} /> View on GitHub
+            <a href="https://github.com/TitoKilonzo/techpulse-academy" target="_blank" rel="noopener noreferrer" className="glass" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none', padding: '18px 40px', borderRadius: 12, fontSize: '1.1rem', fontWeight: 600, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <GitBranch size={20} /> View on GitHub
             </a>
           </div>
 
           {/* Stats row */}
-          <div className="stats-row" style={{ display: 'flex', justifyContent: 'center', gap: 48, marginTop: 64 }}>
+          <div className="stats-row glass" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '32px 40px', borderRadius: 24, marginTop: 80, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)' }}>
             {[
-              { value: `${stats.totalCourses}+`, label: 'Courses' },
-              { value: `${stats.totalLessons}+`, label: 'Lessons' },
-              { value: `${stats.totalHours}h+`,  label: 'Content' },
-              { value: 'Free',                   label: 'Open Source' },
+              { value: `${stats.totalCourses}+`, label: 'Premium Courses' },
+              { value: `${stats.totalLessons}+`, label: 'Interactive Lessons' },
+              { value: `${stats.totalHours}h+`,  label: 'Hands-on Content' },
+              { value: '100%',                   label: 'Open Source' },
             ].map(s => (
               <div key={s.label} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.9rem', color: '#F97316' }}>{s.value}</div>
-                <div style={{ fontSize: '0.78rem', color: '#9CA3AF', letterSpacing: '0.05em', marginTop: 2 }}>{s.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>{s.value}</div>
+                <div style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', fontWeight: 500, letterSpacing: '0.05em', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -279,106 +262,95 @@ export default function LandingPage() {
       </section>
 
       {/* ── Categories ── */}
-      <section id="courses" style={{ padding: '80px 24px', background: '#F9FAFB', position: 'relative' }}>
+      <section id="courses" style={{ padding: '100px 24px', background: 'var(--bg-secondary)', position: 'relative' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#F97316', letterSpacing: '0.1em', fontWeight: 700, textTransform: 'uppercase' }}>Learning Tracks</span>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 800, marginTop: 8, color: '#111827' }}>Five Disciplines. One Platform.</h2>
-            <p style={{ color: '#6B7280', marginTop: 10, fontSize: '1rem', maxWidth: 540, margin: '10px auto 0' }}>From beginner to production-ready across the most in-demand tech disciplines.</p>
+          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--orange-dark)', letterSpacing: '0.15em', fontWeight: 700, textTransform: 'uppercase', background: 'var(--bg-hover)', padding: '6px 14px', borderRadius: 100 }}>Learning Tracks</span>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, marginTop: 24, color: 'var(--text-primary)' }}>Five Disciplines. One Platform.</h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: 16, fontSize: '1.15rem', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.7 }}>From beginner to production-ready across the most in-demand tech disciplines.</p>
           </div>
-          <div className="cat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 18 }}>
-            {CATEGORIES.map(cat => <CategoryCard key={cat.id} {...cat} />)}
+          <div className="cat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            {CATEGORIES.map((cat, i) => <div key={cat.id} style={{ animationDelay: `${i * 100}ms` }}><CategoryCard {...cat} /></div>)}
           </div>
         </div>
       </section>
 
       {/* ── Featured Courses ── */}
-      <section style={{ padding: '80px 24px', background: '#fff' }}>
+      <section style={{ padding: '100px 24px', background: 'var(--bg-primary)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 36, flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48, flexWrap: 'wrap', gap: 20 }}>
             <div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#F97316', letterSpacing: '0.1em', fontWeight: 700 }}>FEATURED</span>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.4rem,3.5vw,2rem)', fontWeight: 800, marginTop: 6, color: '#111827' }}>Start with the Best</h2>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--orange-dark)', letterSpacing: '0.15em', fontWeight: 700, background: 'var(--bg-hover)', padding: '6px 14px', borderRadius: 100 }}>FEATURED</span>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.8rem,4.5vw,2.5rem)', fontWeight: 800, marginTop: 24, color: 'var(--text-primary)' }}>Start with the Best</h2>
             </div>
-            <Link href="/dashboard/courses" style={{ color: '#F97316', textDecoration: 'none', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-              View all courses <ChevronRight size={15} />
+            <Link href="/dashboard/courses" className="btn-secondary" style={{ textDecoration: 'none', padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.95rem' }}>
+              View all courses <ChevronRight size={18} />
             </Link>
           </div>
-          <div className="course-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 22 }}>
-            {featured.map(c => <CourseCard key={c.slug} course={c} />)}
+          <div className="course-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 28 }}>
+            {featured.map((c, i) => <div key={c.slug} style={{ animationDelay: `${i * 150}ms` }}><CourseCard course={c} /></div>)}
           </div>
         </div>
       </section>
 
-      {/* ── Features section (with background image) ── */}
-      <section id="features" style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden', background: '#FFF7ED' }}>
-        <img
-          src={FEATURES_IMG}
-          alt=""
-          aria-hidden="true"
-          className="section-bg-img"
-          loading="lazy"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.05, pointerEvents: 'none' }}
-        />
+      {/* ── Features section ── */}
+      <section id="features" style={{ padding: '100px 24px', position: 'relative', overflow: 'hidden', background: 'var(--bg-hover)' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', background: 'linear-gradient(to left, var(--orange-dim), transparent)', pointerEvents: 'none' }} />
+        
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#F97316', letterSpacing: '0.1em', fontWeight: 700 }}>WHY TECHPULSE</span>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 800, marginTop: 8, color: '#111827' }}>Built for Real Learning</h2>
-            <p style={{ color: '#6B7280', marginTop: 10, maxWidth: 500, margin: '10px auto 0' }}>Not a slide-show. Real tools, real code, real deployments.</p>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--orange-dark)', letterSpacing: '0.15em', fontWeight: 700, background: 'var(--bg-primary)', padding: '6px 14px', borderRadius: 100, border: '1px solid var(--border)' }}>WHY TECHPULSE</span>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 800, marginTop: 24, color: 'var(--text-primary)' }}>Built for Real Learning</h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: 16, fontSize: '1.15rem', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.7 }}>Not a slide-show. Real tools, real code, real deployments.</p>
           </div>
-          <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 22 }}>
-            {FEATURES.map(({ Icon, title, desc, color }) => (
-              <div key={title} style={{ background: '#fff', border: '1.5px solid #E5E7EB', borderRadius: 16, padding: 28, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: `${color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
-                  <Icon size={24} color={color} />
+          <div className="feat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24 }}>
+            {FEATURES.map(({ Icon, title, desc }, i) => (
+              <div key={title} className="glass animate-fade-up" style={{ animationDelay: `${i * 100}ms`, background: 'var(--bg-primary)', borderRadius: 20, padding: 32, transition: 'transform 0.3s', cursor: 'default' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-8px)'} onMouseLeave={e => e.currentTarget.style.transform = 'none'}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, boxShadow: '0 8px 20px rgba(232,134,12,0.3)' }}>
+                  <Icon size={28} color="#fff" />
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: 8, color: '#111827', fontSize: '1rem' }}>{title}</div>
-                <div style={{ fontSize: '0.85rem', color: '#6B7280', lineHeight: 1.65 }}>{desc}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, marginBottom: 12, color: 'var(--text-primary)', fontSize: '1.15rem' }}>{title}</div>
+                <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>{desc}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA (with background image) ── */}
-      <section style={{ padding: '80px 24px', position: 'relative', overflow: 'hidden', background: '#111827' }}>
-        <img
-          src={CTA_IMG}
-          alt=""
-          aria-hidden="true"
-          loading="lazy"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.18, pointerEvents: 'none' }}
-        />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,rgba(17,24,39,0.92),rgba(194,65,12,0.75))', zIndex: 1 }} />
-        <div className="cta-box section-pad" style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2, padding: '0 24px' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#FED7AA', letterSpacing: '0.1em', fontWeight: 700 }}>GET STARTED TODAY</span>
-          <h2 className="cta-title" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, marginTop: 12, marginBottom: 16, color: '#fff' }}>
-            Start Building Your Skills
+      {/* ── CTA ── */}
+      <section style={{ padding: '120px 24px', position: 'relative', overflow: 'hidden', background: '#1C1917' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(232,134,12,0.2) 0%, transparent 60%)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23e8860c\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")', opacity: 0.5, zIndex: 1 }} />
+        
+        <div className="cta-box section-pad" style={{ maxWidth: 800, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 2 }}>
+          <h2 className="cta-title" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem,6vw,3.5rem)', fontWeight: 800, marginBottom: 24, color: '#fff', lineHeight: 1.1 }}>
+            Ready to <span className="gradient-text">level up?</span>
           </h2>
-          <p style={{ color: '#D1D5DB', marginBottom: 36, lineHeight: 1.8, fontSize: '1rem', maxWidth: 500, margin: '0 auto 36px' }}>
-            Free. Open source. No credit card. Just sign up and start learning.
+          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 48, lineHeight: 1.8, fontSize: '1.2rem', maxWidth: 600, margin: '0 auto 48px' }}>
+            Join thousands of developers mastering the modern tech stack. Free, open source, and built for you.
           </p>
-          <Link href="/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#F97316,#C2410C)', color: '#fff', textDecoration: 'none', padding: '17px 40px', borderRadius: 12, fontWeight: 700, fontSize: '1rem', boxShadow: '0 6px 20px rgba(249,115,22,0.45)' }}>
-            Create Free Account <ArrowRight size={18} />
+          <Link href="/signup" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', padding: '20px 48px', borderRadius: 16, fontWeight: 800, fontSize: '1.15rem' }}>
+            Create Your Free Account <ArrowRight size={22} />
           </Link>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ background: '#fff', borderTop: '1px solid #F3F4F6', padding: '32px 24px', textAlign: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 14 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg,#F97316,#C2410C)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Zap size={14} color="#fff" fill="#fff" />
+      <footer style={{ background: 'var(--bg-primary)', borderTop: '1px solid var(--border)', padding: '48px 24px', textAlign: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 20 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(232,134,12,0.2)' }}>
+            <Zap size={18} color="#fff" fill="#fff" />
           </div>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.95rem', color: '#111827' }}>TechPulse Academy</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.2rem', color: 'var(--text-primary)' }}>TechPulse</span>
         </div>
-        <p style={{ color: '#9CA3AF', fontSize: '0.82rem', marginBottom: 12 }}>Open Source · MIT License</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
-          <a href="https://github.com/TitoKilonzo/techpulse-academy" style={{ color: '#F97316', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}>GitHub</a>
-          <Link href="/login"  style={{ color: '#F97316', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}>Login</Link>
-          <Link href="/signup" style={{ color: '#F97316', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500 }}>Sign Up</Link>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 24 }}>Premium Open Source Learning Platform</p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap', marginBottom: 32 }}>
+          <a href="https://github.com/TitoKilonzo/techpulse-academy" className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>GitHub</a>
+          <Link href="/login"  className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>Login</Link>
+          <Link href="/signup" className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>Sign Up</Link>
         </div>
-        <p style={{ color: '#D1D5DB', fontSize: '0.75rem', marginTop: 16 }}>© {new Date().getFullYear()} TechPulse Academy. Built with Next.js.</p>
+        <div style={{ width: 60, height: 2, background: 'var(--border)', margin: '0 auto 24px' }} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© {new Date().getFullYear()} TechPulse Academy. MIT License. Built with Next.js.</p>
       </footer>
     </div>
   );

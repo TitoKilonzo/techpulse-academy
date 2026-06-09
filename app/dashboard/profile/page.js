@@ -1,9 +1,10 @@
 import { getCurrentUser } from '@/lib/auth';
 import { queryFirst, queryAll } from '@/lib/db';
 import { courses } from '@/lib/courses';
-import { User, Mail, Calendar, Zap, BookOpen, Star } from 'lucide-react';
+import { User, Mail, Calendar, Star, ShieldCheck, Trophy, Flame, BookOpen } from 'lucide-react';
+import ProfileForm from '@/components/dashboard/ProfileForm';
 
-export const metadata = { title: 'Profile' };
+export const metadata = { title: 'Profile | TechPulse' };
 
 export default async function ProfilePage() {
   const payload  = await getCurrentUser();
@@ -15,67 +16,89 @@ export default async function ProfilePage() {
   const joinDate         = user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US',{month:'long',year:'numeric'}) : 'Unknown';
 
   return (
-    <div style={{ maxWidth:800 }}>
-      <h1 style={{ fontFamily:'var(--font-display)',fontWeight:800,fontSize:'1.6rem',marginBottom:28 }}>My Profile</h1>
+    <div style={{ maxWidth: 900 }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.6rem,4vw,2rem)', marginBottom: 24, color: 'var(--text-primary)' }}>My Profile</h1>
 
-      {/* Profile card */}
-      <div style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,padding:32,marginBottom:24,display:'flex',gap:28,alignItems:'flex-start',flexWrap:'wrap' }}>
-        <div style={{ width:80,height:80,borderRadius:'50%',background:'linear-gradient(135deg,#F97316,#C2410C)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-          <User size={36} color="#fff" />
+      {/* Hero Profile Card */}
+      <div className="card-premium animate-fade-up" style={{ padding: 32, display: 'flex', gap: 32, alignItems: 'center', flexWrap: 'wrap', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, right: 0, width: '40%', height: '100%', background: 'linear-gradient(to left, var(--orange-glow), transparent)', opacity: 0.3, pointerEvents: 'none' }} />
+        
+        <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 8px 24px rgba(232,134,12,0.4)', border: '4px solid var(--bg-card)' }}>
+          <span style={{ fontSize: '2.5rem', color: '#fff', fontWeight: 800, fontFamily: 'var(--font-display)' }}>{user?.name?.charAt(0).toUpperCase() ?? 'U'}</span>
         </div>
-        <div style={{ flex:1 }}>
-          <h2 style={{ fontFamily:'var(--font-display)',fontSize:'1.4rem',fontWeight:700,marginBottom:4 }}>{user?.name}</h2>
-          <div style={{ display:'flex',flexDirection:'column',gap:8,marginTop:10 }}>
-            {[
-              { Icon:Mail,     text:user?.email },
-              { Icon:Calendar, text:`Joined ${joinDate}` },
-              { Icon:Star,     text:`${user?.xp ?? 0} XP earned` },
-            ].map(({ Icon,text }) => (
-              <div key={text} style={{ display:'flex',alignItems:'center',gap:8,color:'var(--text-secondary)',fontSize:'0.875rem' }}>
-                <Icon size={14} color="var(--text-muted)" />{text}
-              </div>
-            ))}
+        
+        <div style={{ flex: 1, zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>{user?.name}</h2>
+            {user?.role === 'admin' && (
+              <span className="badge-gold" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px' }}>
+                <ShieldCheck size={14} /> Admin
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Mail size={16} color="var(--orange)" />{user?.email}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Calendar size={16} color="var(--orange)" />Joined {joinDate}</div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:28 }}>
+      {/* Stats Row */}
+      <div className="stats-grid animate-fade-up" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 16, marginTop: 24, animationDelay: '100ms' }}>
         {[
-          { label:'Enrolled',           value:progress.length,         color:'#2563EB' },
-          { label:'Completed Courses',  value:completedCourses.length, color:'#10B981' },
-          { label:'Total Lessons Done', value:totalLessons,            color:'#A78BFA' },
-        ].map(({label,value,color})=>(
-          <div key={label} style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:12,padding:'20px 24px',textAlign:'center' }}>
-            <div style={{ fontFamily:'var(--font-display)',fontWeight:700,fontSize:'2rem',color,marginBottom:4 }}>{value}</div>
-            <div style={{ fontSize:'0.75rem',color:'var(--text-muted)',letterSpacing:'0.04em' }}>{label.toUpperCase()}</div>
+          { label: 'Courses Enrolled', value: progress.length,         Icon: BookOpen, color: 'var(--blue)' },
+          { label: 'Completed Courses',value: completedCourses.length, Icon: Trophy,   color: 'var(--emerald)' },
+          { label: 'Lessons Done',     value: totalLessons,            Icon: Star,     color: 'var(--violet)' },
+          { label: 'Current Streak',   value: user?.streak ?? 0,       Icon: Flame,    color: 'var(--orange)' },
+        ].map(({label, value, Icon, color}) => (
+          <div key={label} className="card-premium" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 12, background: `color-mix(in srgb, ${color} 15%, transparent)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon size={24} color={color} />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--text-primary)', lineHeight: 1, marginBottom: 4 }}>{value}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Course progress list */}
-      <div style={{ background:'var(--bg-card)',border:'1px solid var(--border)',borderRadius:16,padding:24 }}>
-        <h3 style={{ fontFamily:'var(--font-display)',fontWeight:700,fontSize:'1rem',marginBottom:18 }}>Course Progress</h3>
+      {/* Interactive Form Component */}
+      <div className="animate-fade-up" style={{ animationDelay: '200ms' }}>
+        <ProfileForm user={user} />
+      </div>
+
+      {/* Course Progress List */}
+      <div className="card-premium animate-fade-up" style={{ marginTop: 32, padding: 32, animationDelay: '300ms' }}>
+        <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.4rem', marginBottom: 24, color: 'var(--text-primary)' }}>Your Learning Journey</h3>
         {progress.length === 0 ? (
-          <p style={{ color:'var(--text-muted)',fontSize:'0.875rem' }}>No courses started yet.</p>
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
+            No courses started yet. Browse the catalog to get started!
+          </div>
         ) : (
-          <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {progress.map(p => {
               const course = courses.find(c=>c.slug===p.course_slug);
               if (!course) return null;
               const done = JSON.parse(p.completed_lessons||'[]').length;
               const pct  = Math.round((done/course.lessons.length)*100);
               return (
-                <div key={p.course_slug} style={{ display:'flex',gap:14,alignItems:'center' }}>
-                  <img src={course.thumbnail} alt="" style={{ width:44,height:44,borderRadius:8,objectFit:'cover',flexShrink:0 }} />
-                  <div style={{ flex:1,minWidth:0 }}>
-                    <div style={{ fontSize:'0.875rem',fontWeight:500,marginBottom:4,color:'var(--text-primary)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>{course.title}</div>
-                    <div className="progress-bar" style={{ marginBottom:4 }}>
-                      <div className="progress-bar-fill" style={{ width:`${pct}%` }} />
-                    </div>
-                    <div style={{ fontSize:'0.7rem',color:'var(--text-muted)' }}>{done}/{course.lessons.length} lessons · {pct}%</div>
+                <div key={p.course_slug} style={{ display: 'flex', gap: 20, alignItems: 'center', paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+                  {/* Abstract Thumbnail */}
+                  <div style={{ width: 56, height: 56, borderRadius: 12, background: `linear-gradient(135deg, var(--surface-dark), var(--orange))`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>{course.title.substring(0,2)}</span>
                   </div>
-                  {p.completed && <span style={{ fontSize:'0.7rem',color:'#10B981',background:'rgba(16,185,129,0.1)',border:'1px solid rgba(16,185,129,0.25)',borderRadius:100,padding:'3px 10px',fontFamily:'var(--font-mono)',flexShrink:0 }}>DONE</span>}
+                  
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{course.title}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div className="progress-bar" style={{ flex: 1, background: 'var(--bg-primary)' }}>
+                        <div className="progress-bar-fill" style={{ width: `${pct}%`, background: p.completed ? 'var(--emerald)' : 'var(--orange)' }} />
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>{done}/{course.lessons.length} ({pct}%)</div>
+                    </div>
+                  </div>
+                  {p.completed && <span className="badge-gold" style={{ background: 'var(--emerald-dim)', color: 'var(--emerald)', border: '1px solid var(--emerald)' }}>COMPLETED</span>}
                 </div>
               );
             })}

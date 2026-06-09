@@ -15,6 +15,10 @@ export default async function CoursePage({ params }) {
   if (!course) notFound();
 
   const payload  = await getCurrentUser();
+  if (!payload) {
+    const { redirect } = await import('next/navigation');
+    redirect('/login');
+  }
   const progress = await queryFirst(
     'SELECT completed_lessons FROM user_progress WHERE user_id=? AND course_slug=?',
     [payload.id, params.slug]
