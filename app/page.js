@@ -76,15 +76,10 @@ function CourseCard({ course }) {
       }}
     >
       <div style={{ position: 'relative', height: 180, overflow: 'hidden' }}>
-        {/* Placeholder gradient thumbnail to replace Unsplash */}
-        <div style={{
-          width: '100%', height: '100%',
-          background: `linear-gradient(135deg, var(--surface-dark) 0%, var(--orange-dark) 100%)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        <img src={course.thumbnail} alt={course.title} style={{
+          width: '100%', height: '100%', objectFit: 'cover',
           transition: 'transform 0.5s', transform: hovered ? 'scale(1.06)' : 'scale(1)'
-        }}>
-          <span style={{ color: 'rgba(255,255,255,0.1)', fontSize: '5rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>{course.title.substring(0,2)}</span>
-        </div>
+        }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
         <span className="glass" style={{
           position: 'absolute', top: 12, left: 12,
@@ -213,25 +208,17 @@ export default function LandingPage() {
 
       {/* ── Hero Section ── */}
       <section style={{ paddingTop: 160, paddingBottom: 120, position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="hero-bg-img" />
-        <div className="hero-overlay" />
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1600&q=80" alt="Students in a lab" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(28,25,23,0.9) 0%, rgba(180,83,9,0.8) 100%)' }} />
         
-        {/* CSS Floating shapes */}
-        <div style={{ position: 'absolute', top: '15%', right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, var(--orange) 0%, transparent 70%)', opacity: 0.15, filter: 'blur(40px)', animation: 'float 6s ease-in-out infinite' }} />
-        <div style={{ position: 'absolute', bottom: '10%', left: '5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, #FCD34D 0%, transparent 70%)', opacity: 0.1, filter: 'blur(50px)', animation: 'float 8s ease-in-out infinite reverse' }} />
-
         <div className="section-pad animate-fade-up" style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2, textAlign: 'center', width: '100%' }}>
-          
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', padding: '6px 16px', borderRadius: 100, marginBottom: 32, color: '#fff', fontSize: '0.85rem', fontWeight: 600 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} /> Platform v2.0 Live
-          </div>
 
           <h1 className="hero-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(3rem,8vw,6rem)', lineHeight: 1.05, marginBottom: 28, color: '#fff' }}>
-            <span className="gradient-text">Master Tech.</span><br />
+            <span style={{ color: 'var(--orange-glow)' }}>Master Tech.</span><br />
             Build the Future.
           </h1>
 
-          <p className="hero-sub" style={{ fontSize: 'clamp(1.1rem,2.5vw,1.35rem)', color: 'rgba(255,255,255,0.8)', maxWidth: 700, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 400 }}>
+          <p className="hero-sub" style={{ fontSize: 'clamp(1.1rem,2.5vw,1.35rem)', color: 'rgba(255,255,255,0.9)', maxWidth: 700, margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 400 }}>
             Premium interactive learning for developers and security professionals. Open source. Hands-on. Built for scale.
           </p>
 
@@ -239,7 +226,7 @@ export default function LandingPage() {
             <Link href="/signup" className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', padding: '18px 40px', borderRadius: 12, fontWeight: 700, fontSize: '1.1rem' }}>
               Start Learning Free <ArrowRight size={20} />
             </Link>
-            <a href="https://github.com/TitoKilonzo/techpulse-academy" target="_blank" rel="noopener noreferrer" className="glass" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none', padding: '18px 40px', borderRadius: 12, fontSize: '1.1rem', fontWeight: 600, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <a href="https://github.com/TitoKilonzo" target="_blank" rel="noopener noreferrer" className="glass" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none', padding: '18px 40px', borderRadius: 12, fontSize: '1.1rem', fontWeight: 600, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)' }}>
               <GitBranch size={20} /> View on GitHub
             </a>
           </div>
@@ -345,7 +332,7 @@ export default function LandingPage() {
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 24 }}>Premium Open Source Learning Platform</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap', marginBottom: 32 }}>
-          <a href="https://github.com/TitoKilonzo/techpulse-academy" className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>GitHub</a>
+          <a href="https://github.com/TitoKilonzo" className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>GitHub</a>
           <Link href="/login"  className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>Login</Link>
           <Link href="/signup" className="nav-link" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600 }}>Sign Up</Link>
         </div>

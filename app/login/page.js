@@ -65,6 +65,13 @@ export default function LoginPage() {
         padding: 'clamp(24px,6vw,60px)',
       }}>
         <div style={{ maxWidth: 420, width: '100%' }}>
+          {/* Back Home */}
+          <div style={{ marginBottom: 24 }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>
+              <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Back to Home
+            </Link>
+          </div>
+
           {/* Logo */}
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 48 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(232,134,12,0.3)' }}>
@@ -150,10 +157,12 @@ export default function LoginPage() {
 
       {/* ── Visual Panel ── */}
       <div className="auth-visual" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-dark)' }}>
-        {/* Abstract Golden Art */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1C1917 0%, #301f11 50%, #B45309 100%)' }} />
-        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '60%', height: '60%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,0.2) 0%, transparent 60%)', filter: 'blur(40px)' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '60%', height: '60%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,134,12,0.3) 0%, transparent 60%)', filter: 'blur(40px)' }} />
+        <img
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1000&q=80"
+          alt="Students learning together"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,83,9,0.85) 0%, rgba(28,25,23,0.9) 100%)' }} />
 
         <div style={{ position: 'relative', zIndex: 2, padding: '40px', maxWidth: 480, width: '100%' }}>
           {/* Floating Testimonial/Stats */}

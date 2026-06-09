@@ -86,9 +86,12 @@ export default function SignupPage() {
 
       {/* ── Visual Panel ── */}
       <div className="auth-visual" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-dark)' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #B45309 0%, #301f11 50%, #1C1917 100%)' }} />
-        <div style={{ position: 'absolute', top: '10%', left: '-20%', width: '80%', height: '80%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 60%)', filter: 'blur(50px)' }} />
-        <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '70%', height: '70%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,134,12,0.2) 0%, transparent 60%)', filter: 'blur(40px)' }} />
+        <img
+          src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=1000&q=80"
+          alt="Developer working at a modern desk"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,83,9,0.85) 0%, rgba(28,25,23,0.9) 100%)' }} />
 
         <div style={{ position: 'relative', zIndex: 2, padding: '40px', maxWidth: 480, width: '100%' }}>
           <div className="animate-fade-up" style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: '40px 32px' }}>
@@ -118,6 +121,13 @@ export default function SignupPage() {
       {/* ── Form Panel ── */}
       <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: 'clamp(24px,6vw,60px)' }}>
         <div style={{ maxWidth: 420, width: '100%' }}>
+          {/* Back Home */}
+          <div style={{ marginBottom: 24 }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600 }}>
+              <ArrowRight size={16} style={{ transform: 'rotate(180deg)' }} /> Back to Home
+            </Link>
+          </div>
+
           <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 40 }}>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg, var(--orange), var(--orange-dark))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(232,134,12,0.3)' }}>
               <Zap size={20} color="#fff" fill="#fff" />

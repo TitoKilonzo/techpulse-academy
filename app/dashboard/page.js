@@ -31,7 +31,7 @@ export default async function DashboardPage() {
       <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 'clamp(1.6rem,4vw,2rem)', marginBottom: 6, color: 'var(--text-primary)' }}>
-            Welcome back, {user?.name?.split(' ')[0] ?? 'Learner'} 👋
+            Welcome back, {user?.name?.split(' ')[0] ?? 'Learner'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Ready to conquer another lab today?</p>
         </div>
