@@ -6,12 +6,8 @@ const nextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
   },
-  /* Instant page loads — aggressive static generation */
   poweredByHeader: false,
   compress: true,
-  experimental: {
-    optimisticClientCache: true,
-  },
 };
 
 export default nextConfig;
